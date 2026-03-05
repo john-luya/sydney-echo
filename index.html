@@ -30,11 +30,10 @@
         const { useState, useEffect, useRef } = React;
 
         // ==========================================
-        // 1. 【配置区域】API Key (已填入您的 Key)
+        // 1. 【配置区域】API Key
         // ==========================================
         const apiKey = "AIzaSyBrSPL3J8jjWozD0XW2DLMI-uAwXEcNTx8"; 
 
-        // 悉尼备选背景图 (高清实拍)
         const FALLBACK_IMG = "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=2070";
 
         // --- 内置图标组件 ---
@@ -62,11 +61,11 @@
 
 在那里，时间更像是属于你的。您可以慢一点，允许自己晚起，允许自己走神，允许自己把一个下午浪费在海边的台阶上，只是看浪一层层推过来。你不必急着成为一个“有用的人”。你只是一个活着的人。
 
-我在悉尼的租房经历,像一条慢慢上升的曲线。2023年10月18日，我抵达悉尼。那时什么都急。我找了一间短租：三房两卫，住次卧，需和室友共用卫生间。这几乎是我最烦的一点——那种生活边界被迫重叠的感觉，会在每天的细节里提醒你：你还只是暂时借住。后来我相中了一间市中心的公寓。在那一年的合租生活里，我慢慢变得很“安”。那种安是一种稳定的底气。人并需要多奢侈的生活，人只是需要一种不被打扰、不必警惕的放松。
+我在悉尼的租房经历,像一条慢慢上升的曲线。2023年10月18日，我抵达悉尼。那时什么都急。我找了一间短租：三房两卫，住次卧，需和室友共用卫生间。这几乎是我最烦的一点——那种生活边界被迫重叠的感觉，会在每天的细节里提醒你：你还只是暂时借住。后来我相中了一间市中心的公寓。在那一年的合租生活里，我慢慢变得很“安”。
 
-再后来,室友准备换房，新的公寓在海港附近，名字听起来就带着一种锋利的光。当你真的走进去，你又不得不承认：大堂的气味、公共空间的秩序感、健身房与泳池的质感，连安静都像是被设计出来的。你突然明白:原来生活可以被照顾到这种程度。
+后来室友准备换房，新的公寓在海港附近，名字听起来就带着一种锋利的光。当你真的走进去，你又不得不承认：大堂的气味、公共空间的秩序感、健身房与泳池的质感，连安静都像是被设计出来的。你突然明白:原来生活可以被照顾到这种程度。
 
-毕业之后，我飞往香港。前三晚我住在廉价酒店,楼老、走廊昏。住在那里你会感觉到它只负责提供“过夜”，不负责让你“生活”。后两晚我换到五星级酒店,入住那一刻,窗帘合上的声音都更轻。你会明白,住得好不是炫耀,而是一种被妥帖照顾的感觉。可人生偏偏很会开玩笑,迪士尼之后甲沟炎复发了,痛得要命。这让我意识到:我们在住上花钱买的是一种可能性。而当身体不给面子时,再好的环境也只能把疼痛放得安静点。
+毕业之后，我飞往香港。前三晚我住在一家廉价酒店,楼老、走廊昏。住在那里你会感觉到它只负责提供“过夜”，不负责让你“生活”。后两晚我换到五星级酒店,入住那一刻,窗帘合上的声音都更轻。你会明白,住得好不是炫耀,而是一种被妥帖照顾的感觉。可人生偏偏很会开玩笑,迪士尼之后甲沟炎复发了,痛得要命。这让我意识到:我们在住上花钱买的是一种可能性。而当身体不给面子时,再好的环境也只能把疼痛放得安静点。
 
 回国后，落地并不等于安稳。元旦假期一结束，被催着去上班。那种压抑又回来了——比想象中更快、更密、更日常。你会在某个瞬间突然愣住：为什么要这样? 某些时刻,我脑子里会跳出一个词:weird。这是一种真实的错位感。像你刚从海风里走回来，身上还带着那边的空气。下班路上,我会想起悉尼。那时候的我不需要时刻证明自己“在正确的轨道上”。
 
@@ -88,6 +87,7 @@
             const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: '你好，我是那阵悉尼的海风。✨' }]);
             const [chatAiLoading, setChatAiLoading] = useState(false);
 
+            // 增强版调用逻辑：显示真实错误原因
             const callGemini = async (prompt, systemInstruction = "") => {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                 try {
@@ -100,10 +100,22 @@
                         })
                     });
                     const result = await response.json();
-                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "信号微弱。";
+                    
+                    if (!response.ok) {
+                        return `连接受阻。错误代码: ${result.error?.status || 'Unknown'}。原因: ${result.error?.message || '未知'}`;
+                    }
+
+                    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        // 处理安全过滤导致的结果为空
+                        if (result.candidates?.[0]?.finishReason === "SAFETY") {
+                            return "抱歉，这段对话触碰了 AI 的安全感应器，请换个话题试试。";
+                        }
+                        return "AI 已接收但未生成内容，请尝试重新发送。";
+                    }
                 } catch (err) {
-                    console.error("Gemini Error:", err);
-                    return "连接失败，请确认是否为网站添加了 HTTP 限制并等待了 10 分钟。";
+                    return `网络中断。请检查您的代理环境或 API 锁定设置。`;
                 }
             };
 
@@ -148,7 +160,6 @@
             useEffect(() => {
                 const generateImage = async () => {
                     if (!apiKey) { setImgLoading(false); return; }
-                    // 尝试 Imagen 4.0 生图
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
                     try {
                         const response = await fetch(url, {
@@ -162,12 +173,8 @@
                         const data = await response.json();
                         if (data.predictions?.[0]?.bytesBase64Encoded) {
                             setBgImage(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
-                        } else {
-                            console.warn("AI Image generation failed or restricted, using fallback static image.");
                         }
-                    } catch(e) { 
-                        console.error("Imagen Fetch failed (likely Referrer restriction):", e);
-                    }
+                    } catch(e) { console.error("Imagen failed:", e); }
                     setImgLoading(false);
                 };
                 generateImage();
@@ -175,7 +182,6 @@
 
             return (
                 <div className="min-h-screen selection:bg-blue-100">
-                    {/* Header with Improved Image Loading */}
                     <header className="relative h-[75vh] bg-slate-900 flex items-end overflow-hidden">
                         <img 
                             src={bgImage} 
@@ -196,26 +202,23 @@
                         </section>
 
                         <div className="flex justify-center gap-6 py-10 border-y border-slate-100">
-                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`提炼核心主旨:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-full text-sm hover:scale-105 transition-all shadow-xl"><Sparkles size={16}/> 摘要生成</button>
-                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`分析 weird 错位感的情感深度:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-full text-sm hover:bg-slate-50 transition-all shadow-sm"><Heart size={16} className="text-rose-400"/> 情感洞察</button>
+                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`提炼主旨:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-full text-sm hover:scale-105 transition-all shadow-xl"><Sparkles size={16}/> 摘要生成</button>
+                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`分析职场错位感的情感深度:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-full text-sm hover:bg-slate-50 transition-all shadow-sm"><Heart size={16} className="text-rose-400"/> 情感洞察</button>
                         </div>
 
                         <div className="serif-font">
-                            {FULL_TEXT.split('\n\n').map((p, i) => {
-                                const isSpecial = p.includes('weird') || p.includes('呼吸是顺的');
-                                return (
-                                    <p key={i} className={isSpecial ? 'bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-50 italic text-slate-700 leading-relaxed' : ''}>
-                                        {p}
-                                    </p>
-                                );
-                            })}
+                            {FULL_TEXT.split('\n\n').map((p, i) => (
+                                <p key={i} className={p.includes('weird') || p.includes('呼吸是顺的') ? 'bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-50 italic text-slate-700 leading-relaxed' : ''}>
+                                    {p}
+                                </p>
+                            ))}
                         </div>
 
                         <div className="mt-28 pt-20 border-t border-slate-100 text-center space-y-10">
                             <h3 className="text-3xl font-light tracking-[0.2em] uppercase">海风回响 ✨</h3>
                             <button onClick={async ()=>{
                                 setSeaLoading(true);
-                                const res = await callGemini(`以悉尼海风的身份给作者写一段温和治愈的回应。`, "你是一阵温柔的海风。");
+                                const res = await callGemini(`以悉尼海风的口吻针对职场压力给作者写一段治愈的话。`, "你是一阵温柔的海风。");
                                 setSeaEcho(res); setSeaLoading(false);
                             }} disabled={seaLoading} className="px-14 py-5 bg-gradient-to-tr from-blue-600 to-cyan-500 text-white rounded-full shadow-2xl hover:shadow-cyan-200/50 transition-all active:scale-95 disabled:opacity-50 font-medium tracking-widest">
                                 {seaLoading ? <Loader2 className="animate-spin mx-auto"/> : "开启回响"}
@@ -238,9 +241,9 @@
                         </div>
                     </main>
 
-                    {/* Chat Modal */}
+                    {/* 对话弹窗 */}
                     {chatOpen && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md">
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
                             <div className="bg-white w-full max-w-lg rounded-[3rem] flex flex-col h-[80vh] shadow-2xl overflow-hidden animate-fade-in">
                                 <div className="p-8 bg-slate-900 text-white flex justify-between items-center tracking-[0.2em] text-xs uppercase">
                                     <span className="flex items-center gap-3"><Wind size={18} className="text-blue-400" /> Sydney Echo</span>
@@ -268,7 +271,7 @@
                         </div>
                     )}
 
-                    {/* AI Insight Panel */}
+                    {/* AI 洞察面板 */}
                     {aiPanelOpen && (
                         <div className="fixed bottom-12 right-12 w-96 bg-white rounded-[3rem] shadow-2xl border p-10 z-50 animate-fade-in glass-panel">
                             <div className="flex justify-between items-center mb-10 text-[11px] tracking-[0.4em] font-bold text-slate-300 uppercase">
