@@ -49,8 +49,6 @@
             font-weight: 200;
             color: #94a3b8;
         }
-
-        .divider { height: 1px; background: linear-gradient(to right, transparent, #e2e8f0, transparent); }
     </style>
 </head>
 <body>
@@ -72,7 +70,7 @@
             return (
                 <div className="min-h-screen selection:bg-blue-100">
                     
-                    {/* Header: 标题字号协调为 6xl (桌面) */}
+                    {/* Header */}
                     <header className="relative h-[80vh] bg-slate-900 flex items-end overflow-hidden">
                         <img 
                             src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=2070" 
@@ -90,7 +88,7 @@
                         </div>
                     </header>
 
-                    <main className="max-w-2xl mx-auto px-6 py-24 space-y-20">
+                    <main className="max-w-2xl mx-auto px-6 py-24 space-y-24">
                         
                         {/* 卷首语 */}
                         <section className="relative py-8 text-center">
@@ -100,43 +98,57 @@
                             </div>
                         </section>
 
-                        {/* 笔者自序卡片 */}
-                        <section className="bg-white border border-slate-100 p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-slate-200/30 relative overflow-hidden group animate-fade-in">
-                            <div className="absolute -top-6 -right-6 opacity-5 group-hover:scale-110 transition-transform duration-700">
-                                <Sparkles size={160} />
+                        {/* 笔者自序卡片 - 采用温暖的杏色底色 */}
+                        <section className="bg-[#fefaf6] border border-orange-100 p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-orange-900/5 relative overflow-hidden group animate-fade-in">
+                            <div className="absolute -top-6 -right-6 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+                                <Wind size={200} />
                             </div>
                             <div className="relative z-10">
-                                <h2 className="text-[10px] tracking-[0.4em] uppercase text-blue-500 font-bold mb-8 flex items-center gap-2">
-                                    <Wind size={14} /> Preface · 笔者自序
+                                <h2 className="text-[10px] tracking-[0.4em] uppercase text-orange-800/60 font-bold mb-8 flex items-center gap-2">
+                                    <Wind size={14} className="text-orange-400" /> Preface · 笔者自序
                                 </h2>
-                                <div className="text-lg leading-loose text-slate-600 serif-font italic">
+                                <div className="text-lg leading-loose text-slate-700 serif-font italic">
                                     回国后的日子，我常觉得自己像是在两个世界间泅泳：一边是悉尼那场怎么也吹不散的海风，一边是格子间里密不透风的规矩。写下这些，是为了在秩序的缝隙里，给那个曾经自由呼吸过的自己，找一个安放的出口。
                                 </div>
                             </div>
                         </section>
 
-                        {/* 正文第一部分：职场与悉尼的对比 */}
+                        {/* 正文第一部分 */}
                         <article className="text-lg text-slate-800 space-y-10 serif-font px-2">
                             <p className="drop-cap">我是在某个再普通不过的工作日里，突然想起悉尼的。办公室的灯白得发冷，电脑屏幕像一块持续发光的玻璃。人声、键盘声、走廊里不紧不慢的脚步声，混在一起，形成一种很难逃开的背景噪音。那一刻我没有发生什么大事，也没有被谁训斥，甚至连工作都算不上繁重，可我就是忽然觉得胸口被什么压了一下————不是疼，是闷。像你已经很努力在适应一种节奏，却还是被它轻轻推开，提醒你：你不属于这里。</p>
                             
                             <p>元旦假期一结束，家里几乎是把我“送”进了职场。实习期，没什么负担，听起来甚至轻松，可我越往里走越觉得难受。难受不是因为事情有多难，而是因为那些无处不在的形式、流程、规矩，它们像透明的墙，摸上去没有形状，却处处挡着你。你必须先经过一套仪式：确认、审批、递交、复核、汇报。你不得不把本来能直线到达的结果，绕成一圈又一圈，像在向某种看不见的权威证明：你配得上被允许完成它。</p>
                             
-                            <p className="bg-blue-50/30 p-10 rounded-[2.5rem] italic text-slate-600 border-l border-blue-100 shadow-sm leading-relaxed">我受不了这种强制的枷锁。每当那种无形的压迫感落下来，我就会下意识地想起悉尼————想起那两年看似“虚度”、却在我二十四年人生里最值得怀念的光阴。</p>
-                            
-                            <p>悉尼的天空总是很开阔。云在很高的地方慢慢移动，光线不急不躁地铺在街道上，风从海那边来，带着一点盐和一点凉。那时我并没有把这一切叫作“幸福”，我只是觉得日子是顺的——呼吸是顺的，心是松的。你不必时时刻刻解释自己在做什么，也不必把每一个选择都包装成“正确的决定”。在那里，时间更像是属于你的。您可以慢一点，允许自己晚起，允许自己走神，允许自己把一个下午浪费在海边的台阶上，只是看浪一层层推过来。你不必急着成为一个“有用的人”。你只是一个活着的人。</p>
+                            <p className="bg-blue-50/30 p-10 rounded-[2.5rem] italic text-slate-600 border-l border-blue-100 shadow-sm leading-relaxed text-lg">我受不了这种强制的枷锁。每当那种无形的压迫感落下来，我就会下意识地想起悉尼————想起那两年看似“虚度”、却在我二十四年人生里最值得怀念的光阴。</p>
                         </article>
 
-                        {/* 正文第二部分：关于居住的执着（还原核心） */}
+                        {/* 核心主旨卡片 - 采用清新的海波蓝 */}
+                        <section className="bg-[#f0f9ff] border border-blue-100 p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-blue-900/5 relative overflow-hidden group animate-fade-in">
+                            <div className="absolute -top-10 -right-10 opacity-[0.05] group-hover:rotate-12 transition-transform duration-1000">
+                                <Sparkles size={220} />
+                            </div>
+                            <div className="relative z-10">
+                                <h2 className="text-[10px] tracking-[0.4em] uppercase text-blue-600/60 font-bold mb-8 flex items-center gap-2">
+                                    <Sparkles size={14} className="text-blue-400" /> Core Theme · 核心主旨
+                                </h2>
+                                <div className="text-lg leading-loose text-slate-700 serif-font">
+                                    文章通过“海风”与“规矩”的张力，探讨了居住环境如何作为情绪的托底，以及在二十四岁这一生命阶段，对自由状态最诚实的缅怀。悉尼代表着“顺畅呼吸”，而国内职场则是“形式枷锁”的代名词。
+                                </div>
+                            </div>
+                        </section>
+
                         <article className="text-lg text-slate-800 space-y-10 serif-font px-2">
+                            <p>悉尼的天空总是很开阔。云在很高的地方慢慢移动，光线不急不躁地铺在街道上，风从海那边来，带着一点盐和一点凉。那时我并没有把这一切叫作“幸福”，我只是觉得日子是顺的——呼吸是顺的，心是松的。你不必时时刻刻解释自己在做什么，也不必把每一个选择都包装成“正确的决定”。在那里，时间更像是属于你的。您可以慢一点，允许自己晚起，允许自己走神，允许自己把一个下午浪费在海边的台阶上，只是看浪一层层推过来。你不必急着成为一个“有用的人”。你只是一个活着的人。</p>
+
                             <h3 className="text-[10px] tracking-[0.4em] text-slate-300 uppercase mb-12 border-b border-slate-100 pb-4">Chapter II · 栖居之底气</h3>
                             <p>而在这段自由里，有一件事对我来说格外重要：住处。我对住所的执着源于我对底气的购买。差别很难用指标讲清楚。它更像一种长期的、细小的、却会在你情绪低落时托住你的东西。那种差别来自你回到家推开门的瞬间————空气是不是干净、光线是不是舒服、隔音是不是让你可以安静地把自己放下；来自你睡醒后不需要先忍受什么，才开始新的一天。</p>
                             
-                            <p>我在悉尼的租房经历，像一条慢慢上升的曲线。2023年10月18日，我抵达悉尼。那时什么都急。我在短租的房里住次卧，和室友共用卫生间。这种生活边界被迫重叠的感觉，会在每天的细节里提醒你：你只是暂时借住。后来我相中了一间市中心的公寓。我站在那里的时候，心里会出现一种直接的念头——我想住在这里。缺点很直白：比很多选择贵出一截。可有些喜欢是压不住的。我就是在那一年里，慢慢变得很“安”。那种安是一种稳定的底气。门一关上，城市像被隔在玻璃之外。你会觉得自己被收纳得很好。</p>
+                            <p>我在悉尼的租房经历，像一条慢慢上升的曲线。2023年10月18日，我抵达悉尼。那时什么都急。我在短租的房里住次卧，和室友共用卫生间。这种生活边界被迫重叠的感觉，会在每天的细节里提醒你：你还只是暂时借住。后来我相中了一间市中心的公寓。我站在那里的时候，心里会出现一种直接的念头——我想住在这里。缺点很直白：比很多选择贵出一截。可有些喜欢是压不住的。我就是在那一年里，慢慢变得很“安”。那种安是一种稳定的底气。门一关上，城市像被隔在玻璃之外。你会觉得自己被收纳得很好。</p>
                             
                             <p>后来室友准备换房，新的公寓在海港附近，名字听起来就带着一种锋利的光。当你真的走进去，你又不得不承认：大堂的气味、公共空间的秩序感、健身房与泳池的质感，连安静都像是被设计出来的。你突然明白：原来生活可以被照顾到这种程度。</p>
                         </article>
 
-                        {/* 笔者侧写卡片 */}
+                        {/* 笔者侧写卡片 - 保持深色对比，作为视觉重音 */}
                         <section className="bg-slate-900 text-white p-10 md:p-14 rounded-[3rem] shadow-2xl relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8 opacity-10">
                                 <Heart size={120} />
@@ -151,9 +163,8 @@
                             </div>
                         </section>
 
-                        {/* 正文第三部分：香港的隐喻与回归（还原深度） */}
                         <article className="text-lg text-slate-800 space-y-10 serif-font px-2">
-                            <p>毕业之后，我飞往香港。前三晚我住在廉价酒店。楼老、走廊昏。住在那样的地方，你会明显感觉到它只负责提供“过夜”，不负责让你“生活”。后两晚我换到一家五五星级酒店。入住那一刻，窗帘合上的声音都更轻。你会突然明白，住得好不是为了炫耀，而是一种被妥帖照顾的感觉——你不用费力，事情就能顺利地发生。</p>
+                            <p>毕业之后，我飞往香港。前三晚我住在一家廉价酒店。楼老、走廊昏。住在那样的地方，你会明显感觉到它只负责提供“过夜”，不负责让你“生活”。后两晚我换到一家五星级酒店。入住那一刻，窗帘合上的声音都更轻。你会突然明白，住得好不是为了炫耀，而是一种被妥帖照顾的感觉——你不用费力，事情就能顺利地发生。</p>
                             
                             <p>可人生偏偏很会开玩笑。前三天玩得很尽兴，迪士尼那天更是走到腿软，像把快乐一次性透支。然后甲沟炎复发了，痛得要命。流血、肿胀，走一步都像在跟自己讨价还价。于是最后两天，我几乎没有机会去享受配套。那几天让我清楚意识到：我们愿意在“住”上花钱，买的是一种可能性——一种让你更容易恢复、更容易把自己安放好的可能性。而当身体不给面子的时候，再好的环境也只能把疼痛放得更安静一点，无法替你把疼痛取消。</p>
                             
@@ -162,21 +173,29 @@
                             <p className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-50 italic text-slate-700 leading-relaxed text-lg">现在的生活却像被放进一套结构分明的框架里，时间被整齐切割。那种疲惫不猛烈，却很持久。在悉尼的两年，从结果上看也许并不耀眼，但它真实得发亮。那两年，也许不是我人生最重要的阶段。但它很可能，是我最能呼吸的一段时间。</p>
                         </article>
 
-                        <div className="divider"></div>
-
-                        {/* 结语模块 */}
-                        <section className="relative py-12 text-center space-y-8">
-                            <h3 className="text-2xl font-light text-slate-900 tracking-[0.3em] uppercase">归档 · 悉尼</h3>
-                            <div className="max-w-xl mx-auto text-lg leading-relaxed text-slate-400 serif-font italic">
-                                请记得，你曾经那样自然地呼吸过。<br/>
-                                此刻格子间的灯光虽冷，但灵魂里那场咸湿的海风，永远不会停。✨
+                        {/* 海风的回响卡片 - 采用深邃的渐变底色，信笺感 */}
+                        <section className="relative py-8 group">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-cyan-400/5 to-transparent rounded-[4rem] transition-transform duration-700"></div>
+                            <div className="relative z-10 p-10 md:p-14 text-center space-y-12">
+                                <div className="space-y-4">
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-xl mb-6 group-hover:scale-105 transition-transform">
+                                        <Wind className="text-blue-500" />
+                                    </div>
+                                    <h3 className="text-3xl font-light text-slate-900 tracking-[0.3em] uppercase">海风的回响</h3>
+                                </div>
+                                
+                                <div className="max-w-xl mx-auto text-xl leading-relaxed text-slate-600 serif-font italic text-left bg-white/80 p-10 rounded-[2.5rem] glass-card shadow-lg relative border-white/80">
+                                    <Quote className="absolute -top-4 left-6" />
+                                    请记得，你曾经那样自然地呼吸过。此刻格子间的灯光虽冷，但灵魂里那场咸湿的海风，永远不会停。✨
+                                </div>
                             </div>
                         </section>
 
                         {/* Footer */}
-                        <footer className="pt-16 text-center opacity-20">
+                        <footer className="pt-24 text-center opacity-20">
+                            <div className="h-px w-16 bg-slate-400 mx-auto mb-8"></div>
                             <p className="text-[10px] tracking-[0.5em] uppercase font-bold text-slate-500">
-                                Twenty-Four · Breathing · Memory · Sydney Archive
+                                Sydney Archive · 2023-2025
                             </p>
                         </footer>
 
