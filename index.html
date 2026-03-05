@@ -20,6 +20,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         p { margin-bottom: 2rem; }
+        .hero-gradient { background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%); }
     </style>
 </head>
 <body>
@@ -29,13 +30,14 @@
         const { useState, useEffect, useRef } = React;
 
         // ==========================================
-        // 1. 【配置区域】API Key 已填入
+        // 1. 【配置区域】API Key
         // ==========================================
         const apiKey = "AIzaSyBrSPL3J8jjWozD0XW2DLMI-uAwXEcNTx8"; 
 
-        // ==========================================
-        // 2. 内置 SVG 图标组件
-        // ==========================================
+        // 备选背景图 (悉尼落日实拍)
+        const FALLBACK_IMG = "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=2070";
+
+        // --- 内置图标组件 ---
         const Wind = ({ size = 24, className = "" }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>);
         const Moon = ({ size = 24, className = "" }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>);
         const Heart = ({ size = 24, className = "" }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>);
@@ -47,18 +49,15 @@
         const Volume2 = ({ size = 24, className = "" }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>);
         const Send = ({ size = 24, className = "" }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>);
 
-        // ==========================================
-        // 3. 全文内容 (PDF 原文全量录入)
-        // ==========================================
         const FULL_TEXT = `海风与规矩之间
 
 我是在某个再普通不过的工作日里，突然想起悉尼的。
 
-办公室的灯白得发冷，电脑屏幕像一块持续发光的玻璃。人声、键盘声、走廊里不紧不慢的脚步声，混在一起，形成一种很难逃开的背景噪音。那一刻我没有发生什么大事，也没有被谁训斥，甚至连工作都算不上繁重，可我就是忽然觉得胸口被什么压了一下————不是疼，是闷。像你已经很努力在适应一种节奏，却还是被它轻轻推开，提醒你:你不属于这里，至少暂时不属于。
+办公室的灯白得发冷，电脑屏幕像一块持续发光的玻璃。人声、键盘声、走廊里不紧不慢的脚步声，混在一起，形成一种很难逃开的背景噪音。那一刻我没有发生什么大事，也没有被谁训斥，甚至连工作都算不上繁重，可我就是忽然觉得胸口被什么压了一下。那种感觉像你已经很努力在适应一种节奏，却还是被它轻轻推开，提醒你：你不属于这里，至少暂时不属于。
 
-从去年十二月中旬回国到现在,我很少有真正快乐的一天。元旦假期一结束,家里几乎是把我“送”进了职场。实习期,没什么负担，听起来甚至轻松，可我越往里走越觉得难受。难受不是因为事情有多难，而是因为那些无处不在的形式、流程、规矩，它们像透明的墙，摸上去没有形状，却处处挡着你。很多时候我明明知道要做的是一件很简单的事，可你必须先经过一套仪式：确认、审批、递交、复核、汇报。你不得不把本来能直线到达的结果，绕成一圈又一圈，像在向某种看不见的权威证明：你配得上被允许完成它。
+从去年十二月中旬回国到现在，我很少有真正快乐的一天。元旦假期一结束，家里几乎是把我“送”进了职场。实习期，没什么负担，听起来甚至轻松，可我越往里走越觉得难受。难受不是因为事情有多难，而是因为那些无处不在的形式、流程、规矩，它们像透明的墙，摸上去没有形状，却处处挡着你。很多时候我明明知道要做的是一件很简单的事，可你必须先经过一套仪式：确认、审批、递交、复核、汇报。你不得不把本来能直线到达的结果，绕成一圈又一圈，像在向某种看不见的权威证明：你配得上被允许完成它。
 
-我受不了这种强制的枷锁。每当那种无形的压迫感落下来,我就会下意识地想起悉尼————想起那两年看似“虚度”、却在我二十四年人生里最值得怀念的光阴。
+我受不了这种强制的枷锁。每当那种无形的压迫感落下来，我就会下意识地想起悉尼————想起那两年看似“虚度”、却在我二十四年人生里最值得怀念的光阴。
 
 悉尼的天空总是很开阔。那是一种不需要你抬头确认就能感受到的开阔:云在很高的地方慢慢移动,光线不急不躁地铺在街道上，风从海那边来，带着一点盐和一点凉。很多傍晚我从学校出来，沿着街道往回走，电车从身旁经过，街角咖啡馆的灯透过玻璃亮着，城市不吵，人的脚步也不吵。那时我并没有把这一切叫作“幸福”，我只是觉得日子是顺的——呼吸是顺的，心是松的。你不必时时刻刻解释自己在做什么、不在做什么，也不必把每一个选择都包装成“正确的决定”。
 
@@ -66,21 +65,19 @@
 
 而在这段自由里，有一件事对我来说格外重要：住处。我是一个特别看重居住环境的人。我宁愿把一个月生活费的大头花在“住”上，哪怕在很多人看来那是一种不必要的“浪费”。
 
-差别很难用指标讲清楚。它更像一种长期的、细小的、却会在你情绪低落时托住你的东西。那种差别来自你回到家推开门的瞬间————空气是不是干净、光线是不是舒服、隔音是不是让你可以安静地把自己放下；来自你睡醒后不需要先忍受什么，才开始新的一天。很多事情只有住进去，生活一段时间，才会明白它对你意味着什么。
+那种差别来自你回到家推开门的瞬间————空气是不是干净、光线是不是舒服、隔音是不是让你可以安静地把自己放下；来自你睡醒后不需要先忍受什么，才开始新的一天。很多事情只有住进去，生活一段时间，才会明白它对你意味着什么。
 
-我在悉尼的租房经历,像一条慢慢上升的曲线。2023年10月18日，我抵达悉尼。那时什么都急。我找了一间短租：三房两卫，住次卧，需和室友共用卫生间。这几乎是我最烦的一点——那种生活边界被迫重叠的感觉，会在每天的细节里提醒你：你还只是暂时借住。
+我在悉尼的租房经历,像一条慢慢上升的曲线。2023年10月18日，我抵达悉尼。那时什么都急。我找了一间短租：三房两卫，住次卧，需和室友共用卫生间。这几乎是我最烦的一点——那种生活边界被迫重叠的感觉，会在每天的细节里提醒你：你还只是暂时借住。后来我相中了一间市中心的公寓。它的缺点也很直白：比很多选择贵出一截。可有些喜欢是压不住的。在那一年的合租生活里，我慢慢变得很“安”。
 
-短租结束后，我相中了一间市中心的公寓。它的缺点也很直白：比很多选择贵出一截。可有些喜欢是压不住的。在那一年的合租生活里，我慢慢变得很“安”。那种安是一种稳定的底气。人并不是需要多奢侈的生活，人只是需要一种不被打扰、不必警惕的放松。
+后来室友准备换房，新的公寓在海港附近，名字听起来就带着一种锋利的光。当你真的走进去，你又不得不承认：大堂的气味、公共空间的秩序感、健身房与泳池的质感，连安静都像是被设计出来的。你突然明白：原来生活可以被照顾到这种程度。
 
-再后来,室友准备换房，新的公寓在海港附近，名字听起来就带着一种锋利的光。当你真的走进去，你又不得不承认：大堂的气味、公共空间的秩序感、健身房与泳池的质感，连安静都像是被设计出来的。你突然明白:原来生活可以被照顾到这种程度。
+毕业之后，我飞往香港。前三晚我住在一家廉价酒店，楼老、走廊昏。住在那里你会感觉到它只负责提供“过夜”，不负责让你“生活”。后两晚我换到五星级酒店，入住那一刻，窗帘合上的声音都更轻。你会明白，住得好不是炫耀，而是一种被妥帖照顾的感觉。可人生偏偏很会开玩笑，迪士尼之后甲沟炎复发了，痛得要命。最后两天我几乎没机会享受配套。这让我意识到:我们在住上花钱买的是一种可能性——让你容易舒服。而当身体不给面子时，再好的环境也只能把疼痛放得安静点。
 
-毕业之后,我飞往香港。香港更像一个过渡点。前三晚我住在一家廉价酒店,楼老、走廊昏。住在那里你会感觉到它只负责提供“过夜”，不负责让你“生活”。后两晚我换到五星级酒店,入住那一刻,窗帘合上的声音都更轻。你会明白,住得好不是炫耀,而是一种被妥帖照顾的感觉。可人生偏偏很会开玩笑,迪士尼之后甲沟炎复发了,痛得要命。最后两天我几乎没机会享受配套。这让我意识到:我们在住上花钱买的是一种可能性——让你容易舒服、容易恢复。而当身体不给面子时,再好的环境也只能把疼痛放得安静点。
+回国后，落地并不等于安稳。元旦假期一结束，被催着去上班。那种压抑又回来了——比想象中更快、更密、更日常。你会在某个瞬间突然愣住：为什么要这样？为什么非要按这个形式？某些时刻，我脑子里会跳出一个词：weird。
 
-香港结束后,我转回国内。真正回到熟悉的土地时,落地并不等于安稳。元旦假期一结束,被催着去上班。那种压抑又回来了——比想象中更快、更密、更日常。你会在某个瞬间突然愣住：为什么要这样? 为什么非要按这个形式? 某些时刻,我脑子里会跳出一个词:weird。
+这是一种真实的错位感。像你刚从海风里走回来，身上还带着那边的空气。下班路上,我会想起悉尼。那时候的我不需要时刻证明自己“在正确的轨道上”。现在的生活却像被放进一套结构分明的框架里，时间被整齐切割，情绪被零碎挤压。人的心先一步感到疲惫。
 
-这是一种真实的错位感。像你刚从海风里走回来，身上还带着那边的空气,这里的一切却提醒你:你得快点换一种呼吸方式。下班路上,我会想起悉尼。想起电车驶过的傍晚,想起海风的清凉。那时候的我不需要时刻证明自己“在正确的轨道上”。现在的生活却像被放进一套结构分明的框架里,时间被整齐切割,情绪被零碎挤压。人的心先一步感到疲惫。
-
-我怀念的是一种状态——年轻、自由、未来很宽。在悉尼的两年,从结果上看也许并不耀眼。不一定“成功”，却足够自由；不一定“高光”，却真实得发亮。多年以后,当我再次想起二十四岁,我大概仍会想起那座城市。想起我曾经那么自然地生活过,像一颗心不需要时时刻刻缩回去。
+我怀念的是一种状态——年轻、自由、未来很宽。在悉尼的两年，从结果上看也许并不耀眼，但它真实得发亮。
 
 那两年，也许不是我人生最重要的阶段。但它很可能，是我最能呼吸的一段时间。`;
 
@@ -98,40 +95,22 @@
             const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: '你好，我是那阵悉尼的海风。✨' }]);
             const [chatAiLoading, setChatAiLoading] = useState(false);
 
-            // 【自适应请求逻辑】优先尝试 gemini-2.5-flash
-            const fetchGemini = async (prompt, systemInstruction = "") => {
-                if (!apiKey) return "API Key 缺失";
-                
-                // 根据 ListModels 的结果，匹配最适合的模型
-                const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest"];
-
-                for (const modelName of models) {
-                    try {
-                        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{ parts: [{ text: prompt }] }],
-                                systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
-                            })
-                        });
-                        
-                        const result = await response.json();
-                        if (response.ok) return result.candidates?.[0]?.content?.parts?.[0]?.text;
-                        console.warn(`${modelName} 调用尝试失败:`, result.error?.message);
-                    } catch (err) {
-                        console.error(`${modelName} 网络错误:`, err);
-                    }
-                }
-                throw new Error("模型全部调用失败。请检查 Key 权限或确保网络环境（如全局代理）正常。");
-            };
-
             const callGemini = async (prompt, systemInstruction = "") => {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                 try {
-                    return await fetchGemini(prompt, systemInstruction);
-                } catch (error) {
-                    return `连接失败。详情: ${error.message}。如果您的 IP 在中国内地，请确保使用全局模式。`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
+                        })
+                    });
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "信号微弱。";
+                } catch (err) {
+                    console.error(err);
+                    return "连接失败，请检查 API Key 设置。";
                 }
             };
 
@@ -139,7 +118,6 @@
                 if (!apiKey || ttsLoading) return;
                 setTtsLoading(true);
                 try {
-                    // 使用 gemini-2.5-flash 直接生成带音频模态的回复
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -152,10 +130,9 @@
                     const pcm = result.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
                     if (pcm) {
                         const blob = pcmToWav(pcm, 24000);
-                        const audio = new Audio(URL.createObjectURL(blob));
-                        audio.play();
+                        new Audio(URL.createObjectURL(blob)).play();
                     }
-                } catch (e) { console.error("TTS Error:", e); }
+                } catch (e) { console.error(e); }
                 setTtsLoading(false);
             };
 
@@ -178,14 +155,13 @@
             useEffect(() => {
                 const initImg = async () => {
                     if (!apiKey) { setImgLoading(false); return; }
-                    // 使用列表中可用的 Imagen 4.0
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
                     try {
                         const response = await fetch(url, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
-                                instances: [{ prompt: "Cinematic minimalist photography, Sydney Bondi beach sunset, golden hazy ocean horizon, grainy film texture, high-end magazine style, 16:9" }],
+                                instances: [{ prompt: "Cinematic minimalist photography of Sydney Bondi beach sunset, warm golden light on water, soft hazy city horizon, grainy film style, 16:9" }],
                                 parameters: { sampleCount: 1 }
                             })
                         });
@@ -193,7 +169,9 @@
                         if (data.predictions?.[0]?.bytesBase64Encoded) {
                             setImageBlob(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
                         }
-                    } catch(e) { console.error("Imagen Error:", e); }
+                    } catch(e) { 
+                        console.error("AI Image Generation failed, using fallback.", e);
+                    }
                     setImgLoading(false);
                 };
                 initImg();
@@ -201,9 +179,15 @@
 
             return (
                 <div className="min-h-screen selection:bg-blue-100">
+                    {/* Header with Background Image Logic */}
                     <header className="relative h-[75vh] bg-slate-900 flex items-end">
-                        {imageBlob && <img src={imageBlob} className="absolute inset-0 w-full h-full object-cover opacity-80" />}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                        {/* 优先显示生成的图片，否则显示高质量备选图 */}
+                        <img 
+                            src={imageBlob || FALLBACK_IMG} 
+                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${imgLoading && !imageBlob ? 'opacity-40' : 'opacity-80'}`} 
+                            alt="Sydney Background"
+                        />
+                        <div className="absolute inset-0 hero-gradient"></div>
                         <div className="relative z-10 p-12 max-w-4xl mx-auto w-full text-white">
                             <p className="text-xs tracking-[0.4em] uppercase opacity-60 mb-4 flex items-center gap-2 animate-fade-in"><Anchor size={14}/> Sydney · Memory · Archive</p>
                             <h1 className="text-4xl md:text-7xl font-extralight tracking-tight leading-tight animate-fade-in">在冷白灯光下，<br/>偷听南半球的潮汐</h1>
@@ -216,13 +200,13 @@
                         </section>
 
                         <div className="flex justify-center gap-6 py-10 border-y border-slate-100">
-                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`请提炼这篇文章的核心情感主旨：\n\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-full text-sm hover:scale-105 transition-all shadow-xl"><Sparkles size={16}/> 摘要生成</button>
-                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`深入分析文中关于悉尼的自由与回国后职场束缚的情感张力：\n\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-full text-sm hover:bg-slate-50 transition-all shadow-sm"><Heart size={16} className="text-rose-400"/> 情感洞察</button>
+                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`提炼主旨:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-full text-sm hover:scale-105 transition-all shadow-xl"><Sparkles size={16}/> 摘要生成</button>
+                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`分析职场 Weird 感背后的情感层次:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-full text-sm hover:bg-slate-50 transition-all shadow-sm"><Heart size={16} className="text-rose-400"/> 情感洞察</button>
                         </div>
 
                         <div className="serif-font">
                             {FULL_TEXT.split('\n\n').map((p, i) => {
-                                const isQuote = p.includes('weird') || p.includes('呼吸是顺的') || p.includes('时间更像是属于你的');
+                                const isQuote = p.includes('weird') || p.includes('呼吸是顺的');
                                 return (
                                     <p key={i} className={isQuote ? 'bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-50 italic text-slate-700 leading-relaxed' : ''}>
                                         {p}
@@ -235,7 +219,7 @@
                             <h3 className="text-3xl font-light tracking-[0.2em] uppercase">海风回响 ✨</h3>
                             <button onClick={async ()=>{
                                 setSeaLoading(true);
-                                const res = await callGemini(`以悉尼海风的口吻，给作者写一段温柔、包容且治愈的回应，针对作者对“顺畅呼吸”的怀念。`, "你是一阵温柔的、带着太平洋咸味的海风。");
+                                const res = await callGemini(`以悉尼海风的口吻，给作者写一段治愈的话。`, "你是一阵温柔的海风。");
                                 setSeaEcho(res); setSeaLoading(false);
                             }} disabled={seaLoading} className="px-14 py-5 bg-gradient-to-tr from-blue-600 to-cyan-500 text-white rounded-full shadow-2xl hover:shadow-cyan-200/50 transition-all active:scale-95 disabled:opacity-50 font-medium tracking-widest">
                                 {seaLoading ? <Loader2 className="animate-spin mx-auto"/> : "开启回响"}
@@ -278,7 +262,7 @@
                                     e.preventDefault(); if(!chatInput.trim() || chatAiLoading) return;
                                     const val = chatInput; setChatInput("");
                                     setChatHistory(h=>[...h,{role:'user',text:val}]); setChatAiLoading(true);
-                                    const r = await callGemini(`读者：${val}\n背景：${FULL_TEXT}`, "你是悉尼海风的化身，包容且温和。");
+                                    const r = await callGemini(`读者：${val}\n背景：${FULL_TEXT}`, "你是悉尼海风的化身，包容、温和。");
                                     setChatHistory(h=>[...h,{role:'assistant',text:r}]); setChatAiLoading(false);
                                 }} className="p-8 bg-white border-t flex gap-4">
                                     <input value={chatInput} onChange={e=>setChatInput(e.target.value)} className="flex-1 px-8 py-5 bg-slate-100 rounded-full outline-none text-sm focus:ring-2 focus:ring-blue-100 transition-all" placeholder="倾诉此刻的压抑..." />
