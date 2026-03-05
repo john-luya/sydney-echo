@@ -34,6 +34,7 @@
         // ==========================================
         const apiKey = "AIzaSyBrSPL3J8jjWozD0XW2DLMI-uAwXEcNTx8"; 
 
+        // 备选悉尼背景
         const FALLBACK_IMG = "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=2070";
 
         // --- 内置图标组件 ---
@@ -53,9 +54,9 @@
 
 办公室的灯白得发冷，电脑屏幕像一块持续发光的玻璃。人声、键盘声、走廊里不紧不慢的脚步声，混在一起，形成一种很难逃开的背景噪音。那一刻我没有发生什么大事，也没有被谁训斥，甚至连工作都算不上繁重，可我就是忽然觉得胸口被什么压了一下。那种感觉像你已经很努力在适应一种节奏，却还是被它轻轻推开，提醒你：你不属于这里，至少暂时不属于。
 
-从去年十二月中旬回国到现在，我很少有真正快乐的一天。元旦假期一结束，家里几乎是把我“送”进了职场。实习期，没什么负担，听起来甚至轻松，可我越往里走越觉得难受。难受不是因为事情有多难，而是因为那些无处不在的形式、流程、规矩，它们像透明的墙，摸上去没有形状，却处处挡着你。很多时候我明明知道要做的是一件很简单的事，可你必须先经过一套仪式：确认、审批、递交、复核、汇报。你不得不把本来能直线到达的结果，绕成一圈又一圈，像在向某种看不见的权威证明：你配得上被允许完成它。
+从去年十二月中旬回国到现在，我很少有真正快乐的一天。元旦假期一结束，家里几乎是把我“送”进了职场。实习期,没什么负担，听起来甚至轻松，可我越往里走越觉得难受。难受不是因为事情有多难，而是因为那些无处不在的形式、流程、规矩，它们像透明的墙，摸上去没有形状，却处处挡着你。很多时候我明明知道要做的是一件很简单的事，可你必须先经过一套仪式：确认、审批、递交、复核、汇报。你不得不把本来能直线到达的结果，绕成一圈又一圈，像在向某种看不见的权威证明：你配得上被允许完成它。
 
-我受不了这种强制的枷锁。每当那种无形的压迫感落下来，我就会下意识地想起悉尼————想起那两年看似“虚度”、却在我二十四年人生里最值得怀念的光阴。
+我受不了这种强制的枷锁。每当那种无形的压迫感落下来,我就会下意识地想起悉尼————想起那两年看似“虚度”、却在我二十四年人生里最值得怀念的光阴。
 
 悉尼的天空总是很开阔。那是一种不需要你抬头确认就能感受到的开阔:云在很高的地方慢慢移动,光线不急不躁地铺在街道上，风从海那边来，带着一点盐和一点凉。很多傍晚我从学校出来，沿着街道往回走，电车从身旁经过，街角咖啡馆的灯透过玻璃亮着，城市不吵，人的脚步也不吵。那时我并没有把这一切叫作“幸福”，我只是觉得日子是顺的——呼吸是顺的，心是松的。你不必时时刻刻解释自己在做什么、不在做什么，也不必把每一个选择都包装成“正确的决定”。
 
@@ -87,35 +88,43 @@
             const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: '你好，我是那阵悉尼的海风。✨' }]);
             const [chatAiLoading, setChatAiLoading] = useState(false);
 
-            // 增强版调用逻辑：显示真实错误原因
+            // 终极调用逻辑：带安全设置 & 深度报错
             const callGemini = async (prompt, systemInstruction = "") => {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
+                    // 强制调低安全拦截，避免误伤文学作品
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                    ]
+                };
+
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }],
-                            systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
-                        })
+                        body: JSON.stringify(payload)
                     });
                     const result = await response.json();
                     
                     if (!response.ok) {
-                        return `连接受阻。错误代码: ${result.error?.status || 'Unknown'}。原因: ${result.error?.message || '未知'}`;
+                        return `API 报错 [${response.status}]: ${result.error?.message || 'Referrer 可能不匹配'}`;
                     }
 
-                    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                        return result.candidates[0].content.parts[0].text;
+                    const candidate = result.candidates?.[0];
+                    if (candidate?.content?.parts?.[0]?.text) {
+                        return candidate.content.parts[0].text;
                     } else {
-                        // 处理安全过滤导致的结果为空
-                        if (result.candidates?.[0]?.finishReason === "SAFETY") {
-                            return "抱歉，这段对话触碰了 AI 的安全感应器，请换个话题试试。";
-                        }
-                        return "AI 已接收但未生成内容，请尝试重新发送。";
+                        // 报告具体的拦截原因
+                        const reason = candidate?.finishReason || "UNKNOWN";
+                        return `信号被拦截。原因代码: ${reason} (通常由于安全策略或引荐来源不完全匹配)`;
                     }
                 } catch (err) {
-                    return `网络中断。请检查您的代理环境或 API 锁定设置。`;
+                    return `网络中断。请确认您的 Google Cloud Websites 限制是否包含当前 URL。`;
                 }
             };
 
@@ -166,7 +175,7 @@
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
-                                instances: [{ prompt: "Cinematic minimalist photography of Sydney harbor at sunset, warm hazy golden light, film grain texture, magazine style, 16:9" }],
+                                instances: [{ prompt: "Cinematic minimalist photography, Sydney Bondi sunset, warm golden light on water, film grain, magazine style, 16:9" }],
                                 parameters: { sampleCount: 1 }
                             })
                         });
@@ -174,7 +183,7 @@
                         if (data.predictions?.[0]?.bytesBase64Encoded) {
                             setBgImage(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
                         }
-                    } catch(e) { console.error("Imagen failed:", e); }
+                    } catch(e) { console.warn("AI 生图因权限或模型限制失败，已启用备选图。"); }
                     setImgLoading(false);
                 };
                 generateImage();
@@ -203,7 +212,7 @@
 
                         <div className="flex justify-center gap-6 py-10 border-y border-slate-100">
                             <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`提炼主旨:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-full text-sm hover:scale-105 transition-all shadow-xl"><Sparkles size={16}/> 摘要生成</button>
-                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`分析职场错位感的情感深度:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-full text-sm hover:bg-slate-50 transition-all shadow-sm"><Heart size={16} className="text-rose-400"/> 情感洞察</button>
+                            <button onClick={() => { setAiPanelOpen(true); setAiLoading(true); callGemini(`分析文中职场错位感的情感深度:\n${FULL_TEXT}`).then(r => {setAiResponse(r); setAiLoading(false);}); }} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-full text-sm hover:bg-slate-50 transition-all shadow-sm"><Heart size={16} className="text-rose-400"/> 情感洞察</button>
                         </div>
 
                         <div className="serif-font">
@@ -241,7 +250,7 @@
                         </div>
                     </main>
 
-                    {/* 对话弹窗 */}
+                    {/* Chat Modal */}
                     {chatOpen && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
                             <div className="bg-white w-full max-w-lg rounded-[3rem] flex flex-col h-[80vh] shadow-2xl overflow-hidden animate-fade-in">
@@ -271,7 +280,7 @@
                         </div>
                     )}
 
-                    {/* AI 洞察面板 */}
+                    {/* AI Insight Panel */}
                     {aiPanelOpen && (
                         <div className="fixed bottom-12 right-12 w-96 bg-white rounded-[3rem] shadow-2xl border p-10 z-50 animate-fade-in glass-panel">
                             <div className="flex justify-between items-center mb-10 text-[11px] tracking-[0.4em] font-bold text-slate-300 uppercase">
